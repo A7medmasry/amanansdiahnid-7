@@ -1,0 +1,20 @@
+const functions = require('firebase-functions')
+const { Nuxt } = require('nuxt')
+const express = require('express')
+const app = express()
+const config = {
+  dev: false,
+  buildDir: "../.nuxt",
+  build: {
+    publicPath: '/'
+  }
+}
+const nuxt = new Nuxt(config);
+function handleRequest(req, res) {
+  res.set('Cache-Control', 'public, max-age=600, s-maxage=1200');
+  nuxt.renderRoute(req.path).then(({html})=> {
+    res.send(html);
+  })
+}
+app.get('*', handleRequest);
+exports.ssrapp = functions.https.onRequest(app);

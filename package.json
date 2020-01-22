@@ -1,0 +1,21 @@
+{
+  "name": "klkrd",
+  "version": "1.0.0",
+  "description": "Compra y vende en República Dominicana",
+  "author": "Ahmed Mohammed",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate",
+    "fire": "NODE_ENV=production firebase serve"
+  },
+  "dependencies": {
+    "firebase": "^7.6.2",
+    "nuxt": "^2.0.0"
+  },
+  "devDependencies": {
+    "@nuxtjs/vuetify": "^1.10.2"
+  }
+}
