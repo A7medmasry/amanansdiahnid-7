@@ -3,9 +3,14 @@
   "description": "Cloud Functions for Firebase",
   "dependencies": {
     "express": "^4.17.1",
-    "firebase-admin": "^8.9.1",
-    "firebase-functions": "^3.3.0",
-    "nuxt": "2.11.0"
+    "firebase-admin": "^8.12.1",
+    "firebase-functions": "^3.6.1",
+    "@nuxtjs/firebase": "^5.2.0",
+    "firebase": "^7.14.4",
+    "node-fetch": "^2.6.0",
+    "nuxt": "^2.12.2",
+    "core-js": "^2.6.5",
+    "nodemailer": "^6.4.6"
   },
   "engines": {
     "node": "8"
