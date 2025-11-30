@@ -2,7 +2,7 @@
   <div id="notfound" v-if="error.statusCode === 404">
     <div class="notfound">
       <div class="notfound-404">
-        <h3>Oops! Page not found</h3>
+        <h3>{{pageNotFound}}</h3>
         <h1>
           <span>4</span>
           <span>0</span>
@@ -13,12 +13,13 @@
       <NuxtLink to="/">Home page</NuxtLink>
     </div>
   </div>
-  <h1 v-else>{{ otherError }}</h1>
+  <div v-else-if="error.statusCode === 403">{{ error.statusCode }} {{ error.message }}</div>
+  <div v-else>{{ otherError }}</div>
 </template>
 
 <script>
 export default {
-  layout: 'empty',
+  layout: "empty",
   props: {
     error: {
       type: Object,
@@ -27,18 +28,21 @@ export default {
   },
   head() {
     const title =
-      this.error.statusCode === 404 ? this.pageNotFound : this.otherError
+      this.error.statusCode === 404 ? this.pageNotFound : this.otherError;
     return {
       title
-    }
+    };
   },
   data() {
     return {
-      pageNotFound: '404 Not Found',
-      otherError: 'An error occurred'
-    }
+      pageNotFound: "Oops! Page not found",
+      otherError: "please sign in "
+    };
+  },
+  created() {
+    console.log("object", this.error);
   }
-}
+};
 </script>
 
 <style lang="scss">
@@ -59,7 +63,7 @@ export default {
       position: relative;
       height: 240px;
       h1 {
-        font-family: 'Montserrat', sans-serif !important;
+        font-family: "Montserrat", sans-serif !important;
         position: absolute;
         left: 50%;
         top: 50%;
@@ -76,7 +80,7 @@ export default {
         font-style: normal !important;
       }
       h3 {
-        font-family: 'Cabin', sans-serif;
+        font-family: "Cabin", sans-serif;
         position: relative;
         font-size: 16px;
         font-weight: 700;
@@ -91,7 +95,7 @@ export default {
       }
     }
     h2 {
-      font-family: 'Cabin', sans-serif;
+      font-family: "Cabin", sans-serif;
       font-size: 20px;
       font-weight: 400;
       text-transform: uppercase;
@@ -100,7 +104,7 @@ export default {
       margin-bottom: 25px;
     }
   }
-  @media(max-width: 767px) {
+  @media (max-width: 767px) {
     .notfound {
       .notfound-404 {
         height: 200px !important;
@@ -111,7 +115,7 @@ export default {
     }
   }
 
-  @media(max-width: 480px) {
+  @media (max-width: 480px) {
     .notfound {
       .notfound-404 {
         height: 162px !important;
