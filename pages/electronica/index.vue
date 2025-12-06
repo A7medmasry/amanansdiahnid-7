@@ -1,5 +1,13 @@
 <template>
   <div>
+    <div class="lottie" :style="{ transform: `translate(0, ${loading}%)` }">
+      <div class="lds-ellipsis">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
     <div v-if="ads[0]">
       <div class="header">
         <h1>Compra y vende en República Dominicana</h1>
@@ -16,7 +24,6 @@
                   type="text"
                   placeholder="Buscar en categoría de electronica"
                   class="search-ads"
-                  :class="dark ? 'search-ads--dark' : ''"
                 />
                 <button v-on="on" class="filter">
                   FILTRO
@@ -123,7 +130,7 @@
       <v-container>
         <v-row no-gutters>
           <v-col cols="12" v-for="(ad, index) in filterSearch" :key="ad.id">
-            <v-card class="mb-4" raised>
+            <v-card class="mb-4" raised v-scroll-reveal.reset="{ delay: 800 }">
               <v-row no-gutters>
                 <v-col cols="4">
                   <span v-for="adImg in adsImg" :key="adImg.id">
@@ -143,12 +150,12 @@
                   </span>
                 </v-col>
                 <v-col cols="8">
-                  <router-link :to="$route.path + '/' + ad.id">
+                  <nuxt-link :to="'/electronica/' + ad.id">
                     <div
                       class="titleAd"
                       :class="dark ? 'titleAd--dark' : ''"
-                    >{{ad.title.length > 46 ? ad.title.substring(0,45)+"...": ad.title}}</div>
-                  </router-link>
+                    >{{ad.title.length > 46 ? ad.title.substring(0,45).toLowerCase()+"...": ad.title.toLowerCase()}}</div>
+                  </nuxt-link>
                   <div
                     class="priceAd"
                   >{{ad.currency}} {{ad.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}}</div>
@@ -169,7 +176,14 @@
                 </v-col>
               </v-row>
             </v-card>
-            <v-card class="mb-4" raised v-if="index % 5 === 4"></v-card>
+            <v-card
+              class="mb-4"
+              raised
+              v-if="index % 5 === 4"
+              v-scroll-reveal.reset="{ delay: 800 }"
+            >
+              <Adsense data-ad-client="ca-pub-3374289978792695" data-ad-slot="9806134228"></Adsense>
+            </v-card>
           </v-col>
         </v-row>
       </v-container>
@@ -181,15 +195,15 @@
   </div>
 </template>
 <script>
-// import Adsense from "../components/Adsense.vue";
-import { db, storage } from "@/plugins/firebase";
+import Adsense from "../../components/Adsense.vue";
 
 export default {
-  // components: {
-  //   Adsense
-  // },
+  components: {
+    Adsense
+  },
   data() {
     return {
+      loading: 0,
       dialog: false,
       empty: false,
       page: 1,
@@ -207,50 +221,67 @@ export default {
       pric: []
     };
   },
-  async asyncData({ route }) {
-    let adsTotal = await db.collection("electronica").get();
+  async asyncData({ route, app }) {
+    let adsTotal = await app.$fireStore.collection("electronica").get();
     var ads = [];
+
     adsTotal.forEach(async doc => {
-      const data = {
-        id: doc.id,
-        title: doc.data().title,
-        price: doc.data().price,
-        history: doc.data().history,
-        sub: doc.data().sub,
-        provincia: doc.data().provincia,
-        currency: doc.data().currency,
-        status: doc.data().status
-      };
-      ads.push(data);
+      if (Date.now() < doc.data().history.after) {
+        const data = {
+          id: doc.id,
+          title: doc.data().title,
+          price: doc.data().price,
+          history: doc.data().history,
+          sub: doc.data().sub,
+          provincia: doc.data().provincia,
+          currency: doc.data().currency,
+          status: doc.data().status
+        };
+        ads.push(data);
+      }
     });
     return { ads };
   },
   head() {
     let data = this.$route.params.get;
     return {
-      title: 'electronica',
+      base: process.env.BASE_URL,
+
+      title: "electronica",
       titleTemplate: "%s ← Klkrd!",
       meta: [
         {
           vmid: "description",
           name: "description",
-          content: "Compra y vende celulares, tableta, televisores, computadoras, videojuegos, cámara y audio."
+          content:
+            "Compra y vende celulares, tableta, televisores, computadoras, videojuegos, cámara y audio."
         }
       ]
     };
   },
+  mounted() {
+    var that = this;
+    if (this.ads) {
+      setTimeout(() => {
+        for (let index = 0; index <= 100; index++) {
+          that.loading = index;
+        }
+      }, 5000);
+    }
+  },
   beforeMount() {
-    db.collection("electronica")
+    this.$fireStore
+      .collection("electronica")
       .get()
       .then(querySnapshot => {
         if (!querySnapshot.empty) {
           querySnapshot.forEach(doc => {
-            storage
+            this.$fireStorage
               .ref()
               .child(`ads/${doc.id}`)
               .listAll()
               .then(res => {
-                storage
+                this.$fireStorage
                   .ref()
                   .child(`ads/${doc.id}/${res.items[0].name}`)
                   .getDownloadURL()
@@ -283,7 +314,7 @@ export default {
   },
   computed: {
     dark() {
-      return this.$store.state.user.dark;
+      return this.$store.state.dark;
     },
     week() {
       Date.prototype.addDays = function(days) {
@@ -332,6 +363,76 @@ export default {
 };
 </script>
 <style lang="scss">
+.lottie {
+  background: #000;
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  left: 0;
+  bottom: 0;
+  overflow: hidden;
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 360ms ease-in-out;
+}
+.lds-ellipsis {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-ellipsis div {
+  position: absolute;
+  top: 33px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #fff;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds-ellipsis div:nth-child(1) {
+  left: 8px;
+  animation: lds-ellipsis1 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+  left: 8px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+  left: 32px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+  left: 56px;
+  animation: lds-ellipsis3 0.6s infinite;
+}
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(24px, 0);
+  }
+}
+
 @media only screen and (max-width: 770px) {
   .header {
     h1 {
@@ -355,10 +456,12 @@ export default {
 }
 .titleAd {
   color: #000;
-  font-family: "Alatsi", sans-serif;
+  font-family: "Quicksand", sans-serif;
   padding: 15px 0 8px 10px;
-  font-size: 25px;
+  font-size: 23px;
   line-height: 25px;
+  text-transform: capitalize;
+  letter-spacing: 2px;
 }
 @media only screen and (max-width: 770px) {
   .titleH1 {
@@ -399,7 +502,7 @@ export default {
 }
 .titleAd:hover {
   color: #2196f3;
-  -webkit-transition: 1s; /* Safari prior 6.1 */
+  -webkit-transition: 1s;
   transition: 1s;
 }
 .priceAd {
@@ -407,9 +510,11 @@ export default {
   font-size: 20px;
   font-weight: 800;
   padding: 0 0 0 12px;
+  font-family: "Quicksand", sans-serif;
 }
 .totalMeta {
   padding: 10px;
+  font-family: "Quicksand", sans-serif;
   .medaAd {
     padding: 5px 2px;
     font-size: 13px;
@@ -420,15 +525,11 @@ export default {
 }
 .search-ads {
   width: 100%;
-  padding: 15px 30px;
-  color: #000;
-  background-color: #ededed;
-  font-size: 20px;
+  padding: 12px 20px;
+  color: #fff !important;
+  background-color: #bdc3c7;
+  font-size: 18px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
-.search-ads--dark {
-  color: #ededed;
-  background-color: #131316;
 }
 input:focus {
   outline: 0;
@@ -437,11 +538,11 @@ input:focus {
   position: absolute;
   right: 0px;
   font-size: 20px;
-  padding: 15px 35px;
-  background-color: #2196f3;
+  padding: 10.2px 25px;
+  background-color: #7f8c8d;
   color: #ededed;
   img {
-    height: 22px;
+    height: 18px;
     padding-top: 2px;
   }
 }

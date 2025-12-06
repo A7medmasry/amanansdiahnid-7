@@ -1,103 +1,112 @@
 <template>
   <div>
+    <div class="lottie" :style="{ transform: `translate(0, ${loading}%)` }">
+      <div class="content">
+        <img src="../static/logo.png" alt="logo" />
+        <div class="box-logo"></div>
+      </div>
+      <!-- <div class="lds-ellipsis">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>-->
+    </div>
     <v-container>
-      <div class="header">
+      <div class="header" v-scroll-reveal.reset>
         <h1>Compra y vende en República Dominicana</h1>
-        <p>
-          Vende, compra, alquila y publica tus productos y servicios en el sitio mas rápido y confiable
-          de República Dominicana: celulares, inmuebles, vehículos, bicicletas, etc.
-        </p>
+        <p>Publica tus anuncios de productos y servicios en el portal de clasificados más relevante de República Dominicana: celulares, inmuebles, vehículos, bicicletas, etc</p>
       </div>
       <v-row>
-        <v-col class="colE">
-          <router-link to="/inmueebles-en-alquiler">
+        <v-col class="colE" v-scroll-reveal.reset>
+          <nuxt-link to="inmueebles-en-alquiler">
             <div class="card-ads card-ads--1">
               <div>
-                <span>Inmueebles en alquiler</span>
+                <span>Inmuebles en alquiler</span>
               </div>
             </div>
-          </router-link>
+          </nuxt-link>
         </v-col>
-        <v-col class="colE">
-          <router-link to="/inmueebles-en-venta">
+        <v-col class="colE" v-scroll-reveal.reset="{ delay: 250 }">
+          <nuxt-link to="inmueebles-en-venta">
             <div class="card-ads card-ads--2">
               <div>
-                <span>Inmueebles en venta</span>
+                <span>Inmuebles en venta</span>
               </div>
             </div>
-          </router-link>
+          </nuxt-link>
         </v-col>
-        <v-col class="colE">
-          <router-link to="/vehiculos">
+        <v-col class="colE" v-scroll-reveal.reset="{ delay: 500 }">
+          <nuxt-link to="vehiculos">
             <div class="card-ads card-ads--3">
               <div>
-                <span>Vehiculos</span>
+                <span>Vehiculo</span>
               </div>
             </div>
-          </router-link>
+          </nuxt-link>
         </v-col>
-        <v-col class="colE">
-          <router-link to="/bebes-y-ninos">
+        <v-col class="colE" v-scroll-reveal.reset="{ delay: 750 }">
+          <nuxt-link to="bebes-y-ninos">
             <div class="card-ads card-ads--4">
               <div>
-                <span>Bebes y ninos</span>
+                <span>Bebes y niños</span>
               </div>
             </div>
-          </router-link>
+          </nuxt-link>
         </v-col>
-        <v-col class="colE">
-          <router-link to="/hogar">
+        <v-col class="colE" v-scroll-reveal.reset="{ delay: 1000 }">
+          <nuxt-link to="hogar">
             <div class="card-ads card-ads--5">
               <div>
                 <span>Hogar</span>
               </div>
             </div>
-          </router-link>
+          </nuxt-link>
         </v-col>
-        <v-col class="colE">
-          <router-link to="/moda-y-belleza">
+        <v-col class="colE" v-scroll-reveal.reset="{ delay: 1250 }">
+          <nuxt-link to="moda-y-belleza">
             <div class="card-ads card-ads--6">
               <div>
-                <span>Moda y Belleza</span>
+                <span>Moda y belleza</span>
               </div>
             </div>
-          </router-link>
+          </nuxt-link>
         </v-col>
-        <v-col class="colE">
-          <router-link to="/deportes-y-entertenimiento">
+        <v-col class="colE" v-scroll-reveal.reset>
+          <nuxt-link to="deportes-y-entertenimiento">
             <div class="card-ads card-ads--7">
               <div>
-                <span>Deportes y entertenimiento</span>
+                <span>Deportes y entretenimiento</span>
               </div>
             </div>
-          </router-link>
+          </nuxt-link>
         </v-col>
-        <v-col class="colE">
-          <router-link to="/electronica">
+        <v-col class="colE" v-scroll-reveal.reset="{ delay: 250 }">
+          <nuxt-link to="electronica">
             <div class="card-ads card-ads--8">
               <div>
-                <span>Electronica</span>
+                <span>Electrónica</span>
               </div>
             </div>
-          </router-link>
+          </nuxt-link>
         </v-col>
-        <v-col class="colE">
-          <router-link to="/negocios-y-servicios">
+        <v-col class="colE" v-scroll-reveal.reset="{ delay: 500 }">
+          <nuxt-link to="negocios-y-servicios">
             <div class="card-ads card-ads--9">
               <div>
                 <span>Negocios y servicios</span>
               </div>
             </div>
-          </router-link>
+          </nuxt-link>
         </v-col>
-        <v-col class="colE">
-          <router-link to="/animales-y-mascotas">
+        <v-col class="colE" v-scroll-reveal.reset="{ delay: 750 }">
+          <nuxt-link to="animales-y-mascotas">
             <div class="card-ads card-ads--10">
               <div>
                 <span>Animales y mascotas</span>
               </div>
             </div>
-          </router-link>
+          </nuxt-link>
         </v-col>
       </v-row>
     </v-container>
@@ -107,6 +116,7 @@
 export default {
   data() {
     return {
+      loading: 0,
       window: {
         width: 0
       }
@@ -114,6 +124,7 @@ export default {
   },
   head() {
     return {
+      base: process.env.BASE_URL,
       title: "Compra y vende en República Dominicana",
       titleTemplate: "%s ← Klkrd!",
       meta: [
@@ -121,12 +132,18 @@ export default {
           vmid: "description",
           name: "description",
           content:
-            "Vende, compra, alquila y publica tus productos y servicios en el sitio mas rápido y confiable de República Dominicana: celulares, inmuebles, vehículos, bicicletas, etc."
+            "Publica tus anuncios de productos y servicios en el portal de clasificados más relevante de República Dominicana: celulares, inmuebles, vehículos, bicicletas, etc."
         }
       ]
     };
   },
   mounted() {
+    var that = this;
+    setTimeout(() => {
+      for (let index = 0; index <= 100; index++) {
+        that.loading = index;
+      }
+    }, 2000);
     this.$nextTick(function() {
       window.addEventListener("resize", this.getWindowWidth);
       this.getWindowWidth();
@@ -143,6 +160,45 @@ export default {
 };
 </script>
 <style lang="scss">
+.lottie {
+  background: #000;
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  left: 0;
+  bottom: 0;
+  overflow: hidden;
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 360ms ease-in-out;
+  .content {
+    position: relative;
+    .box-logo {
+      top: 0;
+      position: absolute;
+      height: 80px;
+      width: 42px;
+      background-color: #000;
+      animation: logo 1200ms infinite;
+    }
+    img {
+      width: 250px;
+    }
+    @keyframes logo {
+      0% {
+        transform: translate(210px);
+      }
+      50% {
+        transform: translate(0);
+      }
+      100% {
+        transform: translate(210px);
+      }
+    }
+  }
+}
 @media only screen and (max-width: 770px) {
   .header {
     h1 {
@@ -203,7 +259,7 @@ export default {
     padding: 80px 0;
     font-weight: 400;
     font-size: 20px;
-    font-family: "Alatsi", sans-serif;
+    font-family: "Quicksand", sans-serif;
   }
 }
 .card-ads:hover {
